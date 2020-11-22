@@ -12,10 +12,12 @@ func main() {
 	// 検知する対象のユーザ名を指定する
 	userName := os.Getenv("USER_NAME")
 
+	// TODO: ヤフオクべったりなコードになっているので他のコードが入る余地があるようにしたい
 	url := fmt.Sprintf("https://auctions.yahoo.co.jp/seller/%s", userName)
 	res, err := http.Get(url)
 	if err != nil {
 		fmt.Println(err)
+		log.Panicln("http request error.")
 	}
 	defer res.Body.Close()
 
@@ -25,9 +27,14 @@ func main() {
 		return
 	}
 
-	if res.StatusCode >= 200 && res.StatusCode < 500 {
+	// 値が返ってきたら実際のスクレイピング処理
+	if res.StatusCode >= 200 && res.StatusCode < 300 {
 		Info(fmt.Sprintf("status code is %d: %s", res.StatusCode, "出品されている品物を検知しました。"))
-		items := scrape(res.Body)
+		items, err := scrape(res.Body)
+		if err != nil {
+			fmt.Println(err)
+			log.Panicln("スクレイピング中にエラーが発生しました。")
+		}
 		for _, item := range items {
 			Info(item.name)
 			Info(item.href)
@@ -35,7 +42,11 @@ func main() {
 		return
 	}
 
-	body, _ := ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		log.Panicf("Response Bodyの読み込みに失敗しました。")
+	}
 	Error(fmt.Sprintf("%s", body))
 	log.Panicln("予期せぬエラーが帰ってきました。")
 }
