@@ -30,7 +30,7 @@ func main() {
 	// 値が返ってきたら実際のスクレイピング処理
 	if res.StatusCode >= 200 && res.StatusCode < 300 {
 		Info(fmt.Sprintf("status code is %d: %s", res.StatusCode, "出品されている品物を検知しました。"))
-		items, err := scrape(res.Body)
+		items, err := Scrape(res.Body)
 		if err != nil {
 			fmt.Println(err)
 			log.Panicln("スクレイピング中にエラーが発生しました。")
@@ -38,6 +38,12 @@ func main() {
 		for _, item := range items {
 			Info(item.name)
 			Info(item.href)
+		}
+
+		hoge := NotifyItems(items)
+		if hoge != nil {
+			fmt.Println(hoge)
+			log.Panicln("Slackへのポスト中にエラーが発生しました。")
 		}
 		return
 	}

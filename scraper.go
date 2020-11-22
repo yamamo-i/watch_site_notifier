@@ -13,8 +13,8 @@ type Item struct {
 	href string
 }
 
-// scrape methos is scraping html in yahoo auction.
-func scrape(responseBoby io.ReadCloser) ([]Item, error) {
+// scrape method is scraping html in yahoo auction.
+func Scrape(responseBoby io.ReadCloser) ([]Item, error) {
 
 	items := []Item{}
 	doc, err := goquery.NewDocumentFromReader(responseBoby)

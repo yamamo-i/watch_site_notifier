@@ -2,3 +2,6 @@
 #USER_NAME=ma_ma301617k
 # テストユーザ
 USER_NAME=uji757
+
+SLACK_TOKEN=your_api_toke
+SLACK_CHANNEL=your_channel
