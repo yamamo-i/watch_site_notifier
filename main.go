@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/PuerkitoBio/goquery"
 )
 
 func main() {
@@ -29,15 +27,11 @@ func main() {
 
 	if res.StatusCode >= 200 && res.StatusCode < 500 {
 		Info(fmt.Sprintf("status code is %d: %s", res.StatusCode, "出品されている品物を検知しました。"))
-		doc, _ := goquery.NewDocumentFromReader(res.Body)
-
-		// id=AS1m3に出品商品が格納されている
-		doc.Find("div#AS1m3 div.bd.cf h3 a").Each(func(index int, s *goquery.Selection) {
-			// 出品情報の商品名とリンクを表示
-			Info(s.Text())
-			attr, _ := s.Attr("href")
-			Info(attr)
-		})
+		items := scrape(res.Body)
+		for _, item := range items {
+			Info(item.name)
+			Info(item.href)
+		}
 		return
 	}
 
